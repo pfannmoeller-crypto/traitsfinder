@@ -835,3 +835,37 @@ if show_buttons:
         # #region agent log
         debug_log("app.py:576", "Option A or B is None/empty", {"option_a": option_a, "option_b": option_b}, "H5")
         # #endregion
+        # Edge case: show_buttons is True but options are incomplete - show fallback input
+        analysis_complete = False
+        if st.session_state.messages:
+            last_message = st.session_state.messages[-1]
+            if ANALYSIS_COMPLETE_MARKER in last_message.get("content", ""):
+                analysis_complete = True
+        
+        showing_final_results = st.session_state.get("show_final_results", False) or bool(st.session_state.get("final_display_text", ""))
+        
+        if not analysis_complete and not showing_final_results:
+            # #region agent log
+            debug_log("app.py:fallback_input_incomplete", "Showing fallback input (incomplete options)", {"show_buttons": show_buttons, "option_a": option_a, "option_b": option_b}, "H5")
+            # #endregion
+            if prompt := st.chat_input(get_language_text("chat_placeholder")):
+                process_user_input(prompt, show_spinner=False)
+
+# Fallback: text input if no buttons are shown and analysis is not complete
+if not show_buttons:
+    # Check if analysis is complete or final results are being shown
+    analysis_complete = False
+    if st.session_state.messages:
+        last_message = st.session_state.messages[-1]
+        if ANALYSIS_COMPLETE_MARKER in last_message.get("content", ""):
+            analysis_complete = True
+    
+    showing_final_results = st.session_state.get("show_final_results", False) or bool(st.session_state.get("final_display_text", ""))
+    
+    # Only show text input if analysis is not complete and final results are not being displayed
+    if not analysis_complete and not showing_final_results:
+        # #region agent log
+        debug_log("app.py:fallback_input", "Showing fallback text input", {"show_buttons": show_buttons, "analysis_complete": analysis_complete, "showing_final_results": showing_final_results}, "H5")
+        # #endregion
+        if prompt := st.chat_input(get_language_text("chat_placeholder")):
+            process_user_input(prompt, show_spinner=False)
