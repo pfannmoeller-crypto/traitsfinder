@@ -537,13 +537,15 @@ st.markdown("""
         transform: translateY(-2px);
     }
     
-    /* Option Selection Buttons and Skip Button - Match language button style exactly (white with light gray border) */
+    /* All Buttons - Match language button style exactly (white with light gray border) */
     button[data-testid*="btn_a_"],
     button[data-testid*="btn_b_"],
     button[data-testid*="skip_btn"],
+    button[data-testid*="lang_btn"],
     .stButton > button[data-testid*="btn_a_"],
     .stButton > button[data-testid*="btn_b_"],
-    .stButton > button[data-testid*="skip_btn"] {
+    .stButton > button[data-testid*="skip_btn"],
+    .stButton > button[data-testid*="lang_btn"] {
         background-color: white !important;
         color: #111 !important;
         border: 1px solid #ddd !important;
@@ -556,9 +558,11 @@ st.markdown("""
     button[data-testid*="btn_a_"]:hover,
     button[data-testid*="btn_b_"]:hover,
     button[data-testid*="skip_btn"]:hover,
+    button[data-testid*="lang_btn"]:hover,
     .stButton > button[data-testid*="btn_a_"]:hover,
     .stButton > button[data-testid*="btn_b_"]:hover,
-    .stButton > button[data-testid*="skip_btn"]:hover {
+    .stButton > button[data-testid*="skip_btn"]:hover,
+    .stButton > button[data-testid*="lang_btn"]:hover {
         background-color: #f8f9fa !important;
         color: #111 !important;
         border-color: #ccc !important;
@@ -730,17 +734,6 @@ def format_question_with_line_breaks(content, remove_options=False):
 if st.session_state.get("show_final_results", False) and st.session_state.get("final_display_text"):
     display_final_results(st.session_state.final_display_text)
     st.session_state.show_final_results = False
-else:
-    # Calculate progress based on chat history length (rough estimate)
-    # Assuming 2 messages per turn (User + AI), and 40 turns total.
-    current_turn = len(st.session_state.messages) // 2
-    progress = min(current_turn / 40, 1.0)
-
-    if progress < 1.0:
-        st.caption(f"SYSTEM CALIBRATION: {int(progress * 100)}%")
-        st.progress(progress, text=None)
-    else:
-        st.success("CALIBRATION COMPLETE")
 
 # Display Chat History with better spacing
 chat_container = st.container()
